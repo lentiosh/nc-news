@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Loading from './Loading';
-import { getArticleById, updateArticleVotes } from '../utils/api';
+import { getArticleById, updateArticleVotes, getAllUsers } from '../utils/api';
 import CommentsList from './CommentsList';
+import CommentForm from './CommentForm';
+
 
 const SingleArticle = () => {
     const { article_id } = useParams();
     const [article, setArticle] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [users, setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState('');
 
     useEffect(() => {
         getArticleById(article_id)
@@ -19,6 +23,14 @@ const SingleArticle = () => {
             .catch(err => {
                 setError(err.message);
                 setIsLoading(false);
+            });
+            getAllUsers()
+            .then(usersData => {
+                setUsers(usersData);
+                setSelectedUser(usersData[0]?.username);
+            })
+            .catch(err => {
+                console.error('Failed to fetch users:', err);
             });
     }, [article_id]);
 
@@ -58,6 +70,18 @@ const SingleArticle = () => {
             </div>
             <hr className="my-4" />
             <h2 className="text-2xl font-semibold mb-3">Comments</h2>
+            <select 
+                value={selectedUser} 
+                onChange={e => setSelectedUser(e.target.value)} 
+                className="border p-2 rounded mb-4"
+            >
+                {users.map(user => (
+                    <option key={user.username} value={user.username}>
+                        {user.name}
+                    </option>
+                ))}
+            </select>
+            <CommentForm articleId={article_id} username={selectedUser} />
             <CommentsList article_id={article_id} />
         </div>
     );

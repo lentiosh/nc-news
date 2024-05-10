@@ -1,21 +1,13 @@
-function getAllArticles() {
-    return fetch("https://be-nc-news-c2a5.onrender.com/api/articles")
+function getAllArticles(topic) {
+    const url = topic ? `https://be-nc-news-c2a5.onrender.com/api/articles?topic=${topic}` : 'https://be-nc-news-c2a5.onrender.com/api/articles';
+    return fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to fetch articles');
             }
             return response.json();
         })
-        .then(data => {
-            if (!data.articles) {
-                throw new Error('No articles found in the response');
-            }
-            return data.articles;
-        })
-        .catch(error => {
-            console.error('Error fetching articles:', error);
-            return [];
-        });
+        .then(data => data.articles);  
 }
 
 function getArticleById(article_id) {
@@ -69,4 +61,56 @@ function updateArticleVotes(article_id, increment) {
     });
 }
 
-export { getAllArticles, getArticleById, getAllCommentsByArticleId, updateArticleVotes };
+function getAllUsers() {
+    return fetch(`https://be-nc-news-c2a5.onrender.com/api/users`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+            return response.json();
+        })
+        .then(data => {
+            return data.users;
+        });
+}
+
+function addCommentToArticle(articleId, username, body) {
+    return fetch(`https://be-nc-news-c2a5.onrender.com/api/articles/${articleId}/comments`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, body }) 
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(new Error(err.msg)));
+        }
+        return response.json();
+    });
+}
+
+function getAllTopics() {
+    return fetch('https://be-nc-news-c2a5.onrender.com/api/topics')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch topics');
+            }
+            return response.json();
+        })
+        .then(data => data.topics); 
+}
+
+ function getArticlesByTopic(topic) {
+    const url = topic ? `https://be-nc-news-c2a5.onrender.com/api/articles?topic=${topic}` : 'https://be-nc-news-c2a5.onrender.com/api/articles';
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch articles');
+            }
+            return response.json();
+        })
+        .then(data => data.articles); 
+}
+
+export { getAllArticles, getArticleById, getAllCommentsByArticleId, updateArticleVotes, getAllUsers, addCommentToArticle, getAllTopics, getArticlesByTopic };

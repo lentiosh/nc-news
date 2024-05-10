@@ -10,7 +10,7 @@ const ArticleCard = ({ article }) => {
                     <h3 className="font-bold text-lg">{article.title}</h3>
                     <p className="text-gray-600">By {article.author}</p>
                     <p className="text-gray-500 text-sm">Published on {new Date(article.created_at).toLocaleDateString()}</p>
-                    <p className="text-blue-600 text-sm font-semibold">Topic: {article.topic}</p>
+                    <p className="text-[#0cbe88] text-lg font-semibold">Topic: {article.topic}</p>
                 </div>
             </div>
         </Link>
